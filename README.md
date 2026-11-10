@@ -134,10 +134,10 @@ and the same with `-d opcache.jit_buffer_size=0` (opcache on, JIT off).
 | `json_encode() . "\n"` + `fwrite()` loop | 461 | 75 |
 | `Encoder` + `fwrite()` | 469 | 86 |
 
-What this shows: `json_decode()` is almost all of the time, so the incremental `Decoder` runs at about the speed of the naive loops. It is faster than the other
-two ways of reading a file line by line (`fgets()`, `SplFileObject`), a few percent behind an `explode()` over a whole in-memory file on larger lines, and it needs no more
-memory than one chunk plus one line. The `Encoder` is `json_encode()` plus validation of the flags; it is not faster. Without the JIT the numbers differ slightly
-(here by 0-15%, mostly on the small lines, where PHP-level work per line matters more); `json_decode()` and `json_encode()` are native code and do not change. The machine this was measured on
+What this shows: `json_decode()` is almost all of the time, so the incremental `Decoder` runs at about the speed of the naive loops. When collecting, it is
+faster than `fgets()` and `SplFileObject` (1-9%); when discarding, `SplFileObject` is ahead on large lines (453 vs 478 ms) and behind on small ones. It is up to 9% behind an `explode()` over a whole in-memory file on larger lines,
+and it needs no more memory than one chunk plus one line. The `Encoder` is `json_encode()` plus validation of the flags; it is not faster. Without the JIT the numbers differ slightly
+(here by 0-16%, mostly on the small lines, where PHP-level work per line matters more); `json_decode()` and `json_encode()` are native code and do not change. The machine this was measured on
 was not idle, so differences of a few percent are noise.
 
 Design note: decoding all complete lines of a chunk with one `json_decode('[' . implode(',', $lines) . ']')` was measured and rejected. It was 5% faster on the records and about 10-15% faster on
