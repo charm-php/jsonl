@@ -5,7 +5,7 @@ separated by `"\n"`. An `Encoder` turns one value into one line, and an incremen
 There is no stream, file or generator handling in the package; you read and write with `fread()` / `fwrite()` (or any other source
 and sink) and let the codec do only the format. Requires `ext-json`.
 
-Its sibling charm/csv has the same method names (`encode()`, `decode()`, `finish()`), without a shared interface.
+Its sibling [charm/csv](https://github.com/charm-php/csv) has the same method names (`encode()`, `decode()`, `finish()`), without a shared interface.
 
 ```
 composer require charm/jsonl
