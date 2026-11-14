@@ -112,6 +112,7 @@ final class DecoderTest extends TestCase
         } catch (ParseException $e) {
             $this->assertSame(3, $e->lineNumber);
             $this->assertInstanceOf(\JsonException::class, $e->getPrevious());
+            $this->assertInstanceOf(\UnexpectedValueException::class, $e);
             $this->assertInstanceOf(\RuntimeException::class, $e);
         }
     }

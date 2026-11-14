@@ -59,7 +59,7 @@ final class Decoder
     public function finish(): array;                   // end of input: the last line; resets the decoder
 }
 
-final class ParseException extends \RuntimeException {}   // public readonly int $lineNumber; the JsonException is the previous exception
+final class ParseException extends \UnexpectedValueException {}   // public readonly int $lineNumber; the JsonException is the previous exception
 ```
 
 ### Encoder
@@ -144,6 +144,13 @@ Design note: decoding all complete lines of a chunk with one `json_decode('[' . 
 tiny lines (best of 7, JIT and no JIT), but it is not equivalent: a line such as `1,2`, or two lines `[1` and `2]`, form valid JSON in the batch while each line alone is invalid, so
 errors would go undetected (or need a per-line re-validation that removes the gain).
 
+
+## Errors
+
+Misuse by the caller (`JSON_PRETTY_PRINT`, a depth below 1) throws PHP's own `\ValueError`; there are no custom classes for it.
+Bad input data throws `ParseException`, which extends `\UnexpectedValueException`, so `catch (\UnexpectedValueException)` catches a data error from any charm package; the `\JsonException` is its previous exception.
+A value `json_encode()` cannot represent throws `\JsonException` from the Encoder, as in ext/json.
+Since 0.1.1 `ParseException` extends `\UnexpectedValueException`, which is a `\RuntimeException`, so an existing `catch (\RuntimeException)` keeps working.
 
 ## Tests
 
